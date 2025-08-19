@@ -8,7 +8,7 @@ Build a comprehensive vehicle trajectory prediction pipeline using modern Python
 ### 1. Async ETL Pipeline & Data Processing
 - **Build a scalable ETL pipeline** using `asyncio` and `aiohttp` for concurrent data ingestion
 - Implement **columnar storage** using Apache Parquet with partitioning strategies
-- Add support for **trajectory datasets** (eg. NGSIM) with a unified schema
+- Add support for the free **NGSIM trajectory dataset** with a generic schema (possible support for other datasets)
 - Create a **data source factory pattern** for easy dataset switching
 - Handle **data quality issues** gracefully with validation and cleaning pipelines
 - Implement **incremental data loading** with change data capture patterns
