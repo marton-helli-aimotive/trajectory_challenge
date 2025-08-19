@@ -1,0 +1,48 @@
+# @package _global_
+# Evaluation configuration
+
+evaluation:
+  metrics:
+    # Standard trajectory metrics
+    rmse:
+      enabled: true
+      name: "Root Mean Square Error"
+
+    ade:
+      enabled: true
+      name: "Average Displacement Error"
+
+    fde:
+      enabled: true
+      name: "Final Displacement Error"
+
+    # Safety-critical metrics
+    minimum_distance:
+      enabled: true
+      name: "Minimum Distance"
+
+    time_to_collision:
+      enabled: true
+      name: "Time to Collision"
+      threshold: 5.0  # seconds
+
+    lateral_error:
+      enabled: true
+      name: "Lateral Error"
+
+  # Cross-validation settings
+  cross_validation:
+    method: "time_series"  # time_series or k_fold
+    n_splits: 5
+    test_size: 0.2
+
+  # Statistical testing
+  statistical_tests:
+    significance_level: 0.05
+    multiple_comparison_correction: "bonferroni"
+
+  # Visualization
+  visualization:
+    save_plots: true
+    plot_format: "png"
+    dpi: 300

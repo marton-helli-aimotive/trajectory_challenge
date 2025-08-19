@@ -1,0 +1,105 @@
+version: '3.8'
+
+services:
+  # Main trajectory prediction service
+  trajectory-prediction:
+    build:
+      context: .
+      dockerfile: Containerfile
+      target: production
+    volumes:
+      - ./data:/home/trajectory/data
+      - ./outputs:/home/trajectory/outputs
+      - ./logs:/home/trajectory/logs
+      - ./mlruns:/home/trajectory/mlruns
+      - ./mlartifacts:/home/trajectory/mlartifacts
+    environment:
+      - PYTHONPATH=/home/trajectory/src
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    depends_on:
+      - mlflow
+      - database
+    networks:
+      - trajectory-net
+
+  # MLflow tracking server
+  mlflow:
+    image: python:3.11-slim
+    command: >
+      bash -c "pip install mlflow psycopg2-binary &&
+               mlflow server --host 0.0.0.0 --port 5000
+               --backend-store-uri postgresql://trajectory:trajectory@database:5432/mlflow
+               --default-artifact-root /mlflow/artifacts"
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlartifacts:/mlflow/artifacts
+    environment:
+      - MLFLOW_BACKEND_STORE_URI=postgresql://trajectory:trajectory@database:5432/mlflow
+    depends_on:
+      - database
+    networks:
+      - trajectory-net
+
+  # PostgreSQL database for MLflow
+  database:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=mlflow
+      - POSTGRES_USER=trajectory
+      - POSTGRES_PASSWORD=trajectory
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - trajectory-net
+
+  # Dashboard service
+  dashboard:
+    build:
+      context: .
+      dockerfile: Containerfile
+      target: production
+    command: python -m streamlit run src/trajectory_prediction/visualization/dashboard.py --server.port=8501 --server.address=0.0.0.0
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/home/trajectory/data
+      - ./outputs:/home/trajectory/outputs
+      - ./models:/home/trajectory/models
+    environment:
+      - PYTHONPATH=/home/trajectory/src
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    depends_on:
+      - trajectory-prediction
+      - mlflow
+    networks:
+      - trajectory-net
+
+  # Jupyter notebook service for development
+  jupyter:
+    build:
+      context: .
+      dockerfile: Containerfile
+      target: production
+    command: jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --notebook-dir=/home/trajectory
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/home/trajectory/notebooks
+      - ./data:/home/trajectory/data
+      - ./src:/home/trajectory/src
+      - ./configs:/home/trajectory/configs
+    environment:
+      - PYTHONPATH=/home/trajectory/src
+      - JUPYTER_ENABLE_LAB=yes
+    networks:
+      - trajectory-net
+
+volumes:
+  postgres_data:
+
+networks:
+  trajectory-net:
+    driver: bridge

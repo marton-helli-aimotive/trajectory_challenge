@@ -1,0 +1,31 @@
+# Default configuration for trajectory prediction
+defaults:
+  - data: ngsim
+  - models: baseline
+  - evaluation: standard
+  - _self_
+
+# General settings
+project_name: trajectory_prediction
+version: 0.1.0
+debug: false
+seed: 42
+
+# Paths
+data_dir: data/
+output_dir: outputs/
+log_dir: logs/
+model_dir: models/
+
+# Logging
+logging:
+  level: INFO
+  console: true
+  file: true
+  file_path: ${log_dir}/trajectory_prediction.log
+
+# MLflow
+mlflow:
+  experiment_name: trajectory_prediction
+  tracking_uri: mlruns
+  artifact_location: mlartifacts

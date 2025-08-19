@@ -16,7 +16,7 @@ Implement a comprehensive evaluation framework with criticality-aware metrics, s
 ```python
 # Accuracy Metrics
 - RMSE: Root Mean Square Error for overall trajectory accuracy
-- ADE: Average Displacement Error over prediction horizon  
+- ADE: Average Displacement Error over prediction horizon
 - FDE: Final Displacement Error at prediction endpoint
 - Lateral Error: Cross-track deviation from reference path
 

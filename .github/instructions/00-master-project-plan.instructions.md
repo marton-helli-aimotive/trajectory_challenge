@@ -113,7 +113,7 @@ Each milestone must meet its success criteria before proceeding:
 ### Phase 1: Foundation & Data (Milestones 1-3)
 Focus on solid infrastructure and data pipeline. This is critical for everything else.
 
-### Phase 2: Models & Features (Milestones 4-6)  
+### Phase 2: Models & Features (Milestones 4-6)
 Build the core ML pipeline. Start simple and add complexity progressively.
 
 ### Phase 3: Evaluation & Visualization (Milestones 7-8)

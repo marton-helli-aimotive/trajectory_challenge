@@ -19,7 +19,7 @@ Implement sophisticated feature extraction for trajectory prediction, create reu
 - Motion profiles: speed distributions, acceleration patterns
 - Trajectory curvature and path characteristics
 
-# Contextual Features  
+# Contextual Features
 - Lane change detection and classification
 - Following behavior indicators
 - Traffic density and congestion measures

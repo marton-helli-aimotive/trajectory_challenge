@@ -1,0 +1,232 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "trajectory-prediction"
+version = "0.1.0"
+description = "Advanced vehicle trajectory prediction pipeline"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [
+    {name = "Trajectory Challenge Team"},
+]
+keywords = ["trajectory", "prediction", "machine-learning", "autonomous-vehicles"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    # Core data processing
+    "polars>=0.20.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "pyarrow>=12.0.0",
+
+    # Machine learning
+    "scikit-learn>=1.3.0",
+    "xgboost>=2.0.0",
+    "GPy>=1.10.0",
+
+    # Visualization
+    "plotly>=5.15.0",
+    "dash>=2.10.0",
+    "streamlit>=1.25.0",
+
+    # MLOps and configuration
+    "mlflow>=2.5.0",
+    "hydra-core>=1.3.0",
+    "evidently>=0.4.0",
+
+    # Data and geospatial
+    "duckdb>=0.8.0",
+    "geopandas>=0.13.0",
+    "shapely>=2.0.0",
+
+    # Async and web
+    "aiohttp>=3.8.0",
+    "fastapi>=0.100.0",
+    "uvicorn>=0.23.0",
+
+    # Validation and configuration
+    "pydantic>=2.0.0",
+    "typer>=0.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    # Type checking and linting
+    "mypy>=1.5.0",
+    "ruff>=0.0.280",
+
+    # Testing
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+    "hypothesis>=6.80.0",
+
+    # Code quality
+    "pre-commit>=3.3.0",
+    "black>=23.7.0",
+    "isort>=5.12.0",
+
+    # Documentation
+    "sphinx>=7.1.0",
+    "sphinx-rtd-theme>=1.3.0",
+
+    # Jupyter and notebooks
+    "jupyter>=1.0.0",
+    "ipykernel>=6.25.0",
+    "nbformat>=5.9.0",
+]
+
+gpu = [
+    "torch>=2.0.0",
+    "gpytorch>=1.11.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/trajectory-challenge/trajectory-prediction"
+Documentation = "https://trajectory-prediction.readthedocs.io"
+Repository = "https://github.com/trajectory-challenge/trajectory-prediction"
+Issues = "https://github.com/trajectory-challenge/trajectory-prediction/issues"
+
+[project.scripts]
+trajectory-predict = "trajectory_prediction.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/trajectory_prediction"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = [
+    "GPy.*",
+    "plotly.*",
+    "dash.*",
+    "mlflow.*",
+    "evidently.*",
+    "geopandas.*",
+    "shapely.*",
+    "typer.*",
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "trajectory_prediction.cli"
+disallow_untyped_decorators = false
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+    "ARG", # flake8-unused-arguments
+    "SIM", # flake8-simplify
+    "TCH", # flake8-type-checking
+    "PTH", # flake8-use-pathlib
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "B905",  # zip without strict
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]  # unused imports in __init__.py
+"tests/**/*.py" = ["ARG", "S101"]  # allow assert statements in tests
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --cov=src/trajectory_prediction --cov-report=term-missing --cov-report=html"
+testpaths = ["tests"]
+pythonpath = ["src"]
+asyncio_mode = "auto"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+
+[tool.coverage.run]
+source = ["src/trajectory_prediction"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__init__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+line_length = 88
+src_paths = ["src", "tests"]

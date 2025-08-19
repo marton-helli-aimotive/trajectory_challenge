@@ -22,7 +22,7 @@ Implement advanced machine learning models with uncertainty quantification, incl
 
 ### 2. Uncertainty Quantification
 - **Epistemic Uncertainty**: Model uncertainty from limited data
-- **Aleatoric Uncertainty**: Inherent data noise and variability  
+- **Aleatoric Uncertainty**: Inherent data noise and variability
 - **Confidence Intervals**: Prediction bounds and reliability measures
 - **Probabilistic Outputs**: Full trajectory distribution modeling
 

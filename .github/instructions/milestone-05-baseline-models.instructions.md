@@ -18,7 +18,7 @@ Implement baseline and classical machine learning models for trajectory predicti
 1. Constant Velocity (CV): Linear extrapolation
 2. Constant Acceleration (CA): Quadratic extrapolation
 
-# Classical ML Models  
+# Classical ML Models
 3. Polynomial Regression: with engineered features
 4. K-Nearest Neighbors: trajectory similarity with DTW
 ```
