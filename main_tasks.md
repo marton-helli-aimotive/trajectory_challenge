@@ -109,6 +109,7 @@ Build a comprehensive vehicle trajectory prediction pipeline using modern Python
 - **Altair**: Grammar of graphics for statistical plots
 
 ### MLOps & Infrastructure
+- **uv** + **.venv**: Dependency management 
 - **MLflow**: Experiment tracking and model registry
 - **Hydra**: Hierarchical configuration management
 - **pre-commit**: Code quality and ML-specific hooks
