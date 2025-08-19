@@ -13,6 +13,8 @@ Process for milestone review:
 4. Propose specific cleanup actions: files to delete, code to simplify, patterns to consolidate.
 5. Check that the codebase remains maintainable and aligned with project architecture.
 6. Provide a prioritized cleanup plan with concrete file/line references.
+7. Ask for user confirmation, then proceed with the cleanup.
+8. Summarize how the milestone goals have been achieved and verified.
 
 Important constraints:
 - Focus on code quality and maintainability over new features.
