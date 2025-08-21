@@ -31,7 +31,8 @@ def create_sample_ngsim_data() -> pd.DataFrame:
                 {
                     "Vehicle_ID": vehicle_id,
                     "Frame_ID": frame,
-                    "Global_Time": 1000 + frame * 100,  # 0.1 second intervals
+                    "Global_Time": 946684800
+                    + frame,  # 1 second intervals instead of 100
                     "Local_X": 10.0 + frame * 2.0 + np.random.normal(0, 0.1),
                     "Local_Y": 5.0 + vehicle_id * 3.0 + np.random.normal(0, 0.1),
                     "v_Vel": 20.0 + np.random.normal(0, 1.0),
@@ -175,7 +176,7 @@ class TestDataQuality:
 
         points = [
             TrajectoryPoint(
-                timestamp=i,
+                timestamp=946684800 + i,  # Start from year 2000
                 x=float(i),
                 y=1.0,
                 speed=10.0,
@@ -183,6 +184,9 @@ class TestDataQuality:
                 velocity_y=0.0,
                 acceleration_x=0.0,
                 acceleration_y=0.0,
+                heading=0.0,
+                lane_id=1,
+                frame_id=i,
             )
             for i in range(15)  # 15 points - above minimum
         ]
@@ -228,6 +232,7 @@ class TestIncrementalLoading:
         manager.save_checkpoint("test_source", test_data)
 
         loaded_data = manager.load_checkpoint("test_source")
+        assert loaded_data is not None
         assert loaded_data["processed_records"] == 100
 
         # Test listing checkpoints

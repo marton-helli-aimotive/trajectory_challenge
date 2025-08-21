@@ -270,7 +270,6 @@ class NGSIMDataLoader:
             dataset_name = f"ngsim_{Path(file_path).stem}"
 
         # For simplicity in legacy loader, process data directly
-        import asyncio
 
         config = ETLConfig()
         extractor = NGSIMDataExtractor(config, [file_path])
@@ -309,25 +308,6 @@ class NGSIMDataLoader:
         )
 
 
-def load_ngsim_dataset(
-    file_path: Path | str,
-    dataset_name: str | None = None,
-    config: dict[str, Any] | None = None,
-) -> Dataset:
-    """Convenience function to load NGSIM dataset.
-
-    Args:
-        file_path: Path to NGSIM data file
-        dataset_name: Optional name for the dataset
-        config: Optional configuration for the loader
-
-    Returns:
-        Dataset object with loaded trajectories
-    """
-    # This is a legacy function - use NGSIMDataSource for new implementations
-    raise NotImplementedError("Use NGSIMDataSource.create_etl_pipeline() instead")
-
-
 class NGSIMDataSource:
     """Data source implementation for NGSIM datasets."""
 
@@ -344,6 +324,8 @@ class NGSIMDataSource:
     def validate_source(self, data_path: Path) -> bool:
         """Validate if data path is compatible with NGSIM format."""
         # Check file extension and basic structure
+        if not data_path.exists():
+            return False
         return data_path.suffix.lower() in [".csv", ".txt"]
 
     def get_metadata(self) -> dict[str, Any]:
