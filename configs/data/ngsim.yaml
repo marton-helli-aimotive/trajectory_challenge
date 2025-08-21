@@ -1,0 +1,28 @@
+# @package _global_
+# NGSIM dataset configuration
+
+data:
+  name: ngsim
+  source_url: "https://data.transportation.gov/Automobiles/Next-Generation-Simulation-NGSIM-Vehicle-Trajector/8ect-6jqj"
+  raw_data_dir: ${data_dir}/raw/ngsim/
+  processed_data_dir: ${data_dir}/processed/ngsim/
+
+  # Data processing parameters
+  processing:
+    sample_rate: 10  # Hz
+    min_trajectory_length: 30  # minimum frames
+    max_gap_length: 5  # maximum allowed gap in frames
+    coordinate_system: "local"  # local or global
+
+  # Data validation
+  validation:
+    max_speed: 40.0  # m/s
+    max_acceleration: 10.0  # m/s²
+    min_position_variance: 0.01  # m²
+
+  # Feature engineering
+  features:
+    window_size: 30  # frames for feature extraction
+    prediction_horizon: 50  # frames to predict
+    include_neighboring_vehicles: true
+    spatial_radius: 100.0  # meters

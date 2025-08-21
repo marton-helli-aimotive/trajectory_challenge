@@ -1,0 +1,38 @@
+# @package _global_
+# Baseline models configuration
+
+models:
+  baseline:
+    constant_velocity:
+      enabled: true
+      name: "ConstantVelocity"
+
+    constant_acceleration:
+      enabled: true
+      name: "ConstantAcceleration"
+
+  polynomial:
+    enabled: true
+    name: "PolynomialRegression"
+    degree: 3
+    regularization: 0.01
+
+  knn:
+    enabled: true
+    name: "KNearestNeighbors"
+    n_neighbors: 5
+    distance_metric: "dtw"  # dynamic time warping
+
+  gaussian_process:
+    enabled: true
+    name: "GaussianProcess"
+    kernel: "rbf"
+    length_scale: 1.0
+    noise_level: 0.1
+
+  ensemble:
+    enabled: true
+    name: "RandomForestRegressor"
+    n_estimators: 100
+    max_depth: 10
+    random_state: 42
