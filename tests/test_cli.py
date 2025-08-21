@@ -1,7 +1,6 @@
 """Test the CLI module."""
 
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 from typer.testing import CliRunner
@@ -24,61 +23,40 @@ def test_cli_help(runner: CliRunner) -> None:
 
 def test_train_command_help(runner: CliRunner) -> None:
     """Test train command help."""
-    result = runner.invoke(app, ["train", "--help"])
+    result = runner.invoke(app, ["train-command", "--help"])
     assert result.exit_code == 0
     assert "Train trajectory prediction models" in result.stdout
 
 
 def test_predict_command_help(runner: CliRunner) -> None:
     """Test predict command help."""
-    result = runner.invoke(app, ["predict", "--help"])
+    result = runner.invoke(app, ["predict-command", "--help"])
     assert result.exit_code == 0
-    assert "Generate trajectory predictions" in result.stdout
+    assert "Make trajectory predictions" in result.stdout
 
 
 def test_evaluate_command_help(runner: CliRunner) -> None:
     """Test evaluate command help."""
-    result = runner.invoke(app, ["evaluate", "--help"])
+    result = runner.invoke(app, ["evaluate-command", "--help"])
     assert result.exit_code == 0
-    assert "Evaluate trajectory predictions" in result.stdout
+    assert "Evaluate trajectory prediction results" in result.stdout
 
 
-@patch("trajectory_prediction.cli.get_logger")
-@patch("trajectory_prediction.cli.setup_logging")
-@patch("trajectory_prediction.cli.initialize_config_dir")
-@patch("trajectory_prediction.cli.compose")
-def test_train_command_basic(
-    mock_compose,
-    mock_init_config,
-    mock_setup_logging,
-    mock_get_logger,
-    runner: CliRunner,
-    tmp_path: Path,
-) -> None:
+def test_train_command_basic(runner: CliRunner, tmp_path: Path) -> None:
     """Test basic train command execution."""
-    # Mock logger and config
-    mock_logger = mock_get_logger.return_value
-    mock_cfg = mock_compose.return_value
-    mock_cfg.logging.level = "DEBUG"
-    mock_cfg.logging.console = True
-    mock_cfg.logging.file = False
-    mock_cfg.log_dir = str(tmp_path)
+    # Create dummy config file
+    config_file = tmp_path / "config.yaml"
+    config_file.touch()
 
-    result = runner.invoke(app, ["train", "--debug"])
+    result = runner.invoke(app, ["train-command", str(config_file)])
 
-    # Should exit successfully even though pipeline is not implemented
+    # Should exit successfully
     assert result.exit_code == 0
-    mock_setup_logging.assert_called_once()
-    mock_logger.info.assert_called()
+    assert "Training models with config" in result.stdout
 
 
-@patch("trajectory_prediction.cli.get_logger")
-def test_predict_command_basic(
-    mock_get_logger, runner: CliRunner, tmp_path: Path
-) -> None:
+def test_predict_command_basic(runner: CliRunner, tmp_path: Path) -> None:
     """Test basic predict command execution."""
-    mock_logger = mock_get_logger.return_value
-
     # Create dummy files
     model_path = tmp_path / "model.pkl"
     data_path = tmp_path / "data.csv"
@@ -90,50 +68,39 @@ def test_predict_command_basic(
     result = runner.invoke(
         app,
         [
-            "predict",
-            "--model",
+            "predict-command",
             str(model_path),
-            "--data",
             str(data_path),
-            "--output",
             str(output_path),
         ],
     )
 
-    # Should exit successfully even though pipeline is not implemented
+    # Should exit successfully
     assert result.exit_code == 0
-    mock_logger.info.assert_called()
+    assert "Making predictions using model" in result.stdout
 
 
-@patch("trajectory_prediction.cli.get_logger")
-def test_evaluate_command_basic(
-    mock_get_logger, runner: CliRunner, tmp_path: Path
-) -> None:
+def test_evaluate_command_basic(runner: CliRunner, tmp_path: Path) -> None:
     """Test basic evaluate command execution."""
-    mock_logger = mock_get_logger.return_value
-
     # Create dummy files
-    predictions_path = tmp_path / "predictions.csv"
+    results_path = tmp_path / "results.csv"
     ground_truth_path = tmp_path / "ground_truth.csv"
-    output_dir = tmp_path / "output"
+    output_path = tmp_path / "output"
 
-    predictions_path.touch()
+    results_path.touch()
     ground_truth_path.touch()
-    output_dir.mkdir()
+    output_path.mkdir()
 
     result = runner.invoke(
         app,
         [
-            "evaluate",
-            "--predictions",
-            str(predictions_path),
-            "--ground-truth",
+            "evaluate-command",
+            str(results_path),
             str(ground_truth_path),
-            "--output",
-            str(output_dir),
+            str(output_path),
         ],
     )
 
-    # Should exit successfully even though pipeline is not implemented
+    # Should exit successfully
     assert result.exit_code == 0
-    mock_logger.info.assert_called()
+    assert "Evaluating results from" in result.stdout

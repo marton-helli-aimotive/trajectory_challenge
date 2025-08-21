@@ -2,7 +2,7 @@
 
 This module provides utilities for loading and processing NGSIM (Next Generation
 Simulation) trajectory datasets into our standardized data models with full
-ETL pipeline integration.
+ETL pipeline integration, including data downloading capabilities.
 
 NGSIM is a Federal Highway Administration program that collected detailed
 vehicle trajectory data on real freeway segments.
@@ -22,8 +22,10 @@ if TYPE_CHECKING:
 
 import pandas as pd
 
+from .downloaders import NGSIMDownloader
 from .etl import DataExtractor, DataTransformer, ETLConfig
-from .models import Dataset, Trajectory, TrajectoryPoint, Vehicle, VehicleType
+from .models import Trajectory, TrajectoryPoint, Vehicle, VehicleType
+from .sources import DataSource
 
 logger = logging.getLogger(__name__)
 
@@ -245,70 +247,7 @@ class NGSIMDataTransformer(DataTransformer):
         return mapping.get(ngsim_class, VehicleType.OTHER)
 
 
-class NGSIMDataLoader:
-    """Legacy NGSIM data loader for backwards compatibility."""
-
-    def __init__(self, config: dict[str, Any] | None = None):
-        """Initialize NGSIM data loader with configuration."""
-        self.config = config or {}
-
-    def load_dataset(
-        self, file_path: Path | str, dataset_name: str | None = None
-    ) -> Dataset:
-        """Load NGSIM dataset from file.
-
-        Args:
-            file_path: Path to NGSIM data file
-            dataset_name: Optional name for the dataset
-
-        Returns:
-            Dataset object with loaded trajectories
-        """
-        logger.info(f"Loading NGSIM dataset from: {file_path}")
-
-        if dataset_name is None:
-            dataset_name = f"ngsim_{Path(file_path).stem}"
-
-        # For simplicity in legacy loader, process data directly
-
-        config = ETLConfig()
-        extractor = NGSIMDataExtractor(config, [file_path])
-        transformer = NGSIMDataTransformer(config, self.config)
-
-        # Collect trajectories directly
-        trajectories = []
-
-        async def collect_trajectories() -> None:
-            # Extract data
-            extracted_data = []
-            async for item in extractor.extract():
-                extracted_data.append(item)
-
-            # Transform in batches
-            batch_size = 100
-            for i in range(0, len(extracted_data), batch_size):
-                batch = extracted_data[i : i + batch_size]
-                async for trajectory in transformer._transform_batch(batch):
-                    trajectories.append(trajectory)
-
-        asyncio.run(collect_trajectories())
-
-        return Dataset(
-            name=dataset_name,
-            version="1.0",
-            description=f"NGSIM dataset loaded from {file_path}",
-            coordinate_system="cartesian",
-            citation="NGSIM - Next Generation Simulation Program, FHWA",
-            trajectories=trajectories,
-            metadata={
-                "source_file": str(file_path),
-                "total_trajectories": len(trajectories),
-                "loader_type": "legacy_ngsim_loader",
-            },
-        )
-
-
-class NGSIMDataSource:
+class NGSIMDataSource(DataSource):
     """Data source implementation for NGSIM datasets."""
 
     def __init__(self, data_path: Path | str, config: dict[str, Any] | None = None):
@@ -318,8 +257,7 @@ class NGSIMDataSource:
             data_path: Path to NGSIM data file
             config: Optional configuration dict
         """
-        self.data_path = Path(data_path)
-        self.config = config or {}
+        super().__init__(data_path, config)
 
     def validate_source(self, data_path: Path) -> bool:
         """Validate if data path is compatible with NGSIM format."""
@@ -353,6 +291,72 @@ class NGSIMDataSource:
         loader = DataLoader(etl_config, output_path)
 
         return ETLPipeline(extractor, transformer, loader)
+
+
+async def download_and_load_ngsim_dataset(
+    dataset_name: str,
+    download_dir: Path | str,
+    output_path: Path | str,
+    force_download: bool = False,
+    config: dict[str, Any] | None = None,
+) -> None:
+    """Download and process NGSIM dataset with ETL pipeline.
+
+    Args:
+        dataset_name: Name of NGSIM dataset to download ('us101', 'i80', etc.)
+        download_dir: Directory to store downloaded files
+        output_path: Path to store processed Parquet files
+        force_download: Force re-download even if file exists
+        config: Optional configuration for the loader
+
+    Raises:
+        ValueError: If dataset name is invalid
+        DownloadError: If download fails
+    """
+    # Download the dataset
+    downloader = NGSIMDownloader(download_dir)
+    data_path = await downloader.download_dataset(
+        dataset_name, force_download=force_download
+    )
+
+    # Find CSV files in the downloaded/extracted data
+    csv_files: list[Path] = []
+    if data_path.is_dir():
+        csv_files.extend(data_path.glob("*.csv"))
+        csv_files.extend(data_path.glob("*.txt"))
+    elif data_path.suffix.lower() in [".csv", ".txt"]:
+        csv_files.append(data_path)
+
+    if not csv_files:
+        raise ValueError(f"No CSV/TXT files found in downloaded data: {data_path}")
+
+    # Process each file with ETL pipeline
+    for csv_file in csv_files:
+        output_name = f"{dataset_name}_{csv_file.stem}"
+        await load_ngsim_dataset_async(csv_file, output_path, output_name, config)
+
+
+def sync_download_and_load_ngsim_dataset(
+    dataset_name: str,
+    download_dir: Path | str,
+    output_path: Path | str,
+    force_download: bool = False,
+    config: dict[str, Any] | None = None,
+) -> None:
+    """Synchronous wrapper for downloading and loading NGSIM dataset.
+
+    Args:
+        dataset_name: Name of NGSIM dataset to download
+        download_dir: Directory to store downloaded files
+        output_path: Path to store processed Parquet files
+        force_download: Force re-download even if file exists
+        config: Optional configuration for the loader
+    """
+    asyncio.run(
+        download_and_load_ngsim_dataset(
+            dataset_name, download_dir, output_path, force_download, config
+        )
+    )
 
 
 async def load_ngsim_dataset_async(
@@ -393,3 +397,18 @@ def load_ngsim_dataset_sync(
         config: Optional configuration for the loader
     """
     asyncio.run(load_ngsim_dataset_async(file_path, output_path, dataset_name, config))
+
+
+# Register NGSIM data source with factory to avoid circular imports
+def _register_ngsim_source() -> None:
+    """Register NGSIM data source with the factory."""
+    try:
+        from .sources import DataSourceFactory
+
+        DataSourceFactory.register_source("ngsim", NGSIMDataSource)
+    except ImportError:
+        pass  # Sources module not available
+
+
+# Auto-register on import
+_register_ngsim_source()

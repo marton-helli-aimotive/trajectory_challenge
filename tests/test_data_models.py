@@ -6,14 +6,14 @@ from hypothesis import given
 from hypothesis import strategies as st
 from pydantic import ValidationError
 
-from src.trajectory_prediction.data.models import (
+from trajectory_prediction.data.models import (
     Dataset,
     Trajectory,
     TrajectoryPoint,
     Vehicle,
     VehicleType,
 )
-from src.trajectory_prediction.data.validation import (
+from trajectory_prediction.data.validation import (
     DataQualityAnalyzer,
     TrajectoryValidator,
     ValidationIssue,

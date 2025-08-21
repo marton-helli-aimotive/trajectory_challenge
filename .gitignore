@@ -12,6 +12,8 @@ build/
 develop-eggs/
 dist/
 downloads/
+demo_downloads/
+test_data_cache/
 eggs/
 .eggs/
 lib/
@@ -289,3 +291,6 @@ local_config.yml
 !docs/
 !.github/
 !.pre-commit-config.yaml
+
+# UV lock file
+uv.lock

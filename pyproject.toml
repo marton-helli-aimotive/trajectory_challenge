@@ -53,6 +53,7 @@ dependencies = [
 
     # Async and web
     "aiohttp>=3.8.0",
+    "aiofiles>=23.1.0",
     "fastapi>=0.100.0",
     "uvicorn>=0.23.0",
 
@@ -224,3 +225,9 @@ use_parentheses = true
 ensure_newline_before_comments = true
 line_length = 88
 src_paths = ["src", "tests"]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.17.1",
+    "pre-commit>=4.3.0",
+]

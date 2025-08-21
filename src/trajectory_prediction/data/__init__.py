@@ -7,8 +7,15 @@ This package provides comprehensive data processing capabilities including:
 - Data quality pipeline with cleaning and validation
 - Incremental data loading with checkpointing
 - Data source factory pattern for extensibility
+- Data downloaders for fetching trajectory datasets
 """
 
+from .downloaders import (
+    DownloadError,
+    NGSIMDownloader,
+    download_all_ngsim_datasets,
+    download_ngsim_dataset,
+)
 from .etl import DataExtractor, DataLoader, DataTransformer, ETLConfig, ETLPipeline
 from .incremental import (
     CheckpointManager,
@@ -26,11 +33,12 @@ from .models import (
 )
 from .ngsim import (
     NGSIMDataExtractor,
-    NGSIMDataLoader,
     NGSIMDataSource,
     NGSIMDataTransformer,
+    download_and_load_ngsim_dataset,
     load_ngsim_dataset_async,
     load_ngsim_dataset_sync,
+    sync_download_and_load_ngsim_dataset,
 )
 from .quality import (
     DataQualityPipeline,
@@ -60,10 +68,16 @@ __all__ = [
     # NGSIM Integration
     "NGSIMDataExtractor",
     "NGSIMDataTransformer",
-    "NGSIMDataLoader",
     "NGSIMDataSource",
     "load_ngsim_dataset_async",
     "load_ngsim_dataset_sync",
+    "download_and_load_ngsim_dataset",
+    "sync_download_and_load_ngsim_dataset",
+    # Data Downloaders
+    "NGSIMDownloader",
+    "DownloadError",
+    "download_ngsim_dataset",
+    "download_all_ngsim_datasets",
     # Data Quality
     "DataQualityPipeline",
     "DataQualityRule",
