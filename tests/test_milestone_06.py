@@ -348,21 +348,61 @@ class TestUncertaintyMetrics:
 
     def test_epistemic_aleatoric_decomposition(self):
         """Test epistemic and aleatoric uncertainty decomposition."""
+        from src.trajectory_prediction.models.base import PredictionResult
+
         # Create mock ensemble predictions
         ensemble_predictions = [
-            np.array([[10.0, 5.0], [12.0, 6.0]]),
-            np.array([[10.1, 5.1], [12.1, 6.1]]),
-            np.array([[9.9, 4.9], [11.9, 5.9]]),
+            [
+                PredictionResult(
+                    trajectory_id="test_1",
+                    predicted_points=[(10.0, 5.0)],
+                    prediction_horizon=1.0,
+                ),
+                PredictionResult(
+                    trajectory_id="test_2",
+                    predicted_points=[(12.0, 6.0)],
+                    prediction_horizon=1.0,
+                ),
+            ],
+            [
+                PredictionResult(
+                    trajectory_id="test_1",
+                    predicted_points=[(10.1, 5.1)],
+                    prediction_horizon=1.0,
+                ),
+                PredictionResult(
+                    trajectory_id="test_2",
+                    predicted_points=[(12.1, 6.1)],
+                    prediction_horizon=1.0,
+                ),
+            ],
+            [
+                PredictionResult(
+                    trajectory_id="test_1",
+                    predicted_points=[(9.9, 4.9)],
+                    prediction_horizon=1.0,
+                ),
+                PredictionResult(
+                    trajectory_id="test_2",
+                    predicted_points=[(11.9, 5.9)],
+                    prediction_horizon=1.0,
+                ),
+            ],
         ]
 
-        decomposition = epistemic_aleatoric_decomposition(ensemble_predictions)
+        # Create ground truth data
+        ground_truth = [[(10.0, 5.0)], [(12.0, 6.0)]]
 
-        assert "epistemic_uncertainty" in decomposition
-        assert "aleatoric_uncertainty" in decomposition
-        assert "total_uncertainty" in decomposition
-        assert isinstance(decomposition["epistemic_uncertainty"], np.ndarray)
-        assert isinstance(decomposition["aleatoric_uncertainty"], np.ndarray)
-        assert isinstance(decomposition["total_uncertainty"], np.ndarray)
+        decomposition = epistemic_aleatoric_decomposition(
+            ensemble_predictions, ground_truth
+        )
+
+        assert "epistemic" in decomposition
+        assert "aleatoric" in decomposition
+        assert "total" in decomposition
+        assert isinstance(decomposition["epistemic"], float)
+        assert isinstance(decomposition["aleatoric"], float)
+        assert isinstance(decomposition["total"], float)
 
 
 class TestMilestone6Integration:

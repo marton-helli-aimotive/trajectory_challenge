@@ -216,15 +216,15 @@ class TreeEnsemblePredictor(FeatureBasedPredictor):
         if not y_x:
             raise ValueError("No valid targets extracted from trajectories")
 
-        y_x = np.array(y_x)
-        y_y = np.array(y_y)
+        y_x_array = np.array(y_x)
+        y_y_array = np.array(y_y)
 
         # Scale features
         X_scaled = self._scaler.fit_transform(X)
 
         # Train separate models for x and y coordinates
-        self._model_x.fit(X_scaled, y_x)
-        self._model_y.fit(X_scaled, y_y)
+        self._model_x.fit(X_scaled, y_x_array)
+        self._model_y.fit(X_scaled, y_y_array)
 
         self.is_fitted = True
         self._feature_names = [f"feature_{i}" for i in range(X.shape[1])]
