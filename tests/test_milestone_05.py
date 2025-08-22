@@ -29,10 +29,11 @@ from trajectory_prediction.models.polynomial import PolynomialRegressionPredicto
 def sample_trajectory():
     """Create a sample trajectory for testing."""
     points = []
+    base_timestamp = 1704067200.0  # 2024-01-01 00:00:00 UTC
     for i in range(20):  # 2 seconds at 10 Hz
-        t = i * 0.1
-        x = 10 * t
-        y = 5 + 0.5 * t
+        t = base_timestamp + i * 0.1
+        x = 10 * (i * 0.1)
+        y = 5 + 0.5 * (i * 0.1)
         speed = 10.0
 
         point = TrajectoryPoint(
@@ -69,6 +70,7 @@ def sample_trajectories():
     """Create multiple sample trajectories for testing."""
     trajectories = []
     np.random.seed(42)
+    base_timestamp = 1704067200.0  # 2024-01-01 00:00:00 UTC
 
     for traj_id in range(5):
         points = []
@@ -76,9 +78,9 @@ def sample_trajectories():
         start_y = traj_id * 10
 
         for i in range(30):  # 3 seconds at 10 Hz
-            t = i * 0.1
-            x = start_x + 15 * t + np.random.normal(0, 0.1)
-            y = start_y + 2 * t + np.random.normal(0, 0.1)
+            t = base_timestamp + traj_id * 5.0 + i * 0.1  # Offset each trajectory
+            x = start_x + 15 * (i * 0.1) + np.random.normal(0, 0.1)
+            y = start_y + 2 * (i * 0.1) + np.random.normal(0, 0.1)
 
             point = TrajectoryPoint(
                 timestamp=t,
@@ -173,10 +175,20 @@ class TestBaselineModels:
 
         # Test prediction
         history_points = sample_trajectory.points[:10]
-        prediction = model.predict(history_points, prediction_horizon=1.0)
+        history_trajectory = Trajectory(
+            trajectory_id="history_test",
+            vehicle=sample_trajectory.vehicle,
+            points=history_points,
+            dataset_name="test",
+            completeness_score=1.0,
+            temporal_consistency_score=1.0,
+            spatial_accuracy_score=1.0,
+            smoothness_score=1.0,
+        )
+        prediction = model.predict(history_trajectory, prediction_horizon=1.0)
 
         assert prediction is not None
-        assert prediction.trajectory_id == "cv_test_prediction"
+        assert prediction.trajectory_id == "history_test"
         assert len(prediction.predicted_points) > 0
 
     def test_constant_acceleration_model(self, sample_trajectory):
@@ -194,7 +206,17 @@ class TestBaselineModels:
 
         # Test prediction
         history_points = sample_trajectory.points[:10]
-        prediction = model.predict(history_points, prediction_horizon=1.0)
+        history_trajectory = Trajectory(
+            trajectory_id="history_test",
+            vehicle=sample_trajectory.vehicle,
+            points=history_points,
+            dataset_name="test",
+            completeness_score=1.0,
+            temporal_consistency_score=1.0,
+            spatial_accuracy_score=1.0,
+            smoothness_score=1.0,
+        )
+        prediction = model.predict(history_trajectory, prediction_horizon=1.0)
 
         assert prediction is not None
         assert len(prediction.predicted_points) > 0
@@ -220,7 +242,17 @@ class TestClassicalModels:
 
         # Test prediction
         history_points = sample_trajectories[0].points[:10]
-        prediction = model.predict(history_points, prediction_horizon=1.0)
+        history_trajectory = Trajectory(
+            trajectory_id="history_test",
+            vehicle=sample_trajectories[0].vehicle,
+            points=history_points,
+            dataset_name="test",
+            completeness_score=1.0,
+            temporal_consistency_score=1.0,
+            spatial_accuracy_score=1.0,
+            smoothness_score=1.0,
+        )
+        prediction = model.predict(history_trajectory, prediction_horizon=1.0)
 
         assert prediction is not None
         assert len(prediction.predicted_points) > 0
@@ -242,7 +274,17 @@ class TestClassicalModels:
 
         # Test prediction
         history_points = sample_trajectories[0].points[:10]
-        prediction = model.predict(history_points, prediction_horizon=1.0)
+        history_trajectory = Trajectory(
+            trajectory_id="history_test",
+            vehicle=sample_trajectories[0].vehicle,
+            points=history_points,
+            dataset_name="test",
+            completeness_score=1.0,
+            temporal_consistency_score=1.0,
+            spatial_accuracy_score=1.0,
+            smoothness_score=1.0,
+        )
+        prediction = model.predict(history_trajectory, prediction_horizon=1.0)
 
         assert prediction is not None
         assert len(prediction.predicted_points) > 0
@@ -386,14 +428,24 @@ class TestModelValidation:
         model.fit([sample_trajectory])
 
         history_points = sample_trajectory.points[:5]
+        history_trajectory = Trajectory(
+            trajectory_id="history_test",
+            vehicle=sample_trajectory.vehicle,
+            points=history_points,
+            dataset_name="test",
+            completeness_score=1.0,
+            temporal_consistency_score=1.0,
+            spatial_accuracy_score=1.0,
+            smoothness_score=1.0,
+        )
 
         # Test negative horizon
         with pytest.raises(ValueError):
-            model.predict(history_points, prediction_horizon=-1.0)
+            model.predict(history_trajectory, prediction_horizon=-1.0)
 
         # Test zero horizon
         with pytest.raises(ValueError):
-            model.predict(history_points, prediction_horizon=0.0)
+            model.predict(history_trajectory, prediction_horizon=0.0)
 
 
 def test_milestone_05_success_criteria():

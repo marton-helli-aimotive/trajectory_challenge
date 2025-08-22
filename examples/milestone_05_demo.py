@@ -95,8 +95,9 @@ def create_synthetic_trajectories(n_trajectories: int = 50) -> list[Trajectory]:
 
         for t_step in range(int(duration / dt)):
             t = t_step * dt
-            # Use current timestamp + offset to avoid validation issues
-            timestamp = 1000000000.0 + t  # Year 2001 + offset
+            # Spread trajectories across time - each trajectory starts 10 seconds after previous
+            base_timestamp = 1000000000.0 + i * 10.0  # Year 2001 + trajectory offset
+            timestamp = base_timestamp + t
 
             # Kinematic equations with noise
             x = start_x + velocity_x * t + 0.5 * acceleration_x * t**2

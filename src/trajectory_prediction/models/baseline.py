@@ -21,6 +21,9 @@ class ConstantVelocityPredictor(TrajectoryPredictor):
         self, trajectories: list[Trajectory], features: pd.DataFrame | None = None
     ) -> "ConstantVelocityPredictor":
         """Fit the model (no training needed for constant velocity)."""
+        if not trajectories:
+            raise ValueError("Cannot fit model with empty trajectory list")
+
         # Note: trajectories and features are required by interface but not used for baseline models
         _ = trajectories, features
         start_time = time.time()
@@ -42,6 +45,9 @@ class ConstantVelocityPredictor(TrajectoryPredictor):
         _ = features
         if not self.is_fitted:
             raise ValueError("Model must be fitted before prediction")
+
+        if prediction_horizon <= 0:
+            raise ValueError("Prediction horizon must be positive")
 
         start_time = time.time()
 
@@ -113,6 +119,9 @@ class ConstantAccelerationPredictor(TrajectoryPredictor):
         self, trajectories: list[Trajectory], features: pd.DataFrame | None = None
     ) -> "ConstantAccelerationPredictor":
         """Fit the model (no training needed for constant acceleration)."""
+        if not trajectories:
+            raise ValueError("Cannot fit model with empty trajectory list")
+
         # Note: trajectories and features are required by interface but not used for baseline models
         _ = trajectories, features
         start_time = time.time()
@@ -134,6 +143,9 @@ class ConstantAccelerationPredictor(TrajectoryPredictor):
         _ = features
         if not self.is_fitted:
             raise ValueError("Model must be fitted before prediction")
+
+        if prediction_horizon <= 0:
+            raise ValueError("Prediction horizon must be positive")
 
         start_time = time.time()
 

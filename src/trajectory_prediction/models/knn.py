@@ -49,7 +49,7 @@ def normalize_trajectory_length(
     """Normalize trajectory to target length using interpolation.
 
     Args:
-        trajectory: Input trajectory as (n_points, 2) array
+        trajectory: Input trajectory as (n_points, n_features) array
         target_length: Desired number of points
 
     Returns:
@@ -62,11 +62,15 @@ def normalize_trajectory_length(
     original_indices = np.linspace(0, 1, len(trajectory))
     target_indices = np.linspace(0, 1, target_length)
 
-    # Interpolate x and y coordinates separately
-    x_interp = np.interp(target_indices, original_indices, trajectory[:, 0])
-    y_interp = np.interp(target_indices, original_indices, trajectory[:, 1])
+    # Interpolate each feature dimension separately
+    interpolated_features = []
+    for feature_idx in range(trajectory.shape[1]):
+        feature_interp = np.interp(
+            target_indices, original_indices, trajectory[:, feature_idx]
+        )
+        interpolated_features.append(feature_interp)
 
-    return np.column_stack([x_interp, y_interp])
+    return np.column_stack(interpolated_features)
 
 
 class KNearestNeighborsPredictor(TrajectoryPredictor):
