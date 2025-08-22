@@ -8,8 +8,21 @@ This package provides comprehensive data processing capabilities including:
 - Incremental data loading with checkpointing
 - Data source factory pattern for extensibility
 - Data downloaders for fetching trajectory datasets
+- Feature engineering and extraction pipeline
+- Feature store for reusable features
+- Data augmentation techniques
+- Feature validation and quality assessment
 """
 
+from .augmentation import (
+    AugmentationPipeline,
+    NoiseInjectionAugmenter,
+    SpatialTransformationAugmenter,
+    TemporalShiftAugmenter,
+    TrajectoryAugmenter,
+    TrajectoryInterpolationAugmenter,
+    create_default_augmentation_pipeline,
+)
 from .downloaders import (
     DownloadError,
     NGSIMDownloader,
@@ -17,6 +30,28 @@ from .downloaders import (
     download_ngsim_dataset,
 )
 from .etl import DataExtractor, DataLoader, DataTransformer, ETLConfig, ETLPipeline
+from .feature_store import (
+    BatchFeatureProcessor,
+    FeatureStorage,
+    FeatureStore,
+    FileFeatureStorage,
+    InMemoryFeatureStorage,
+    create_default_feature_store,
+)
+from .feature_validation import (
+    FeatureCorrelationAnalyzer,
+    FeatureQualityAssessor,
+    FeatureQualityReport,
+    generate_feature_quality_summary,
+)
+from .features import (
+    ContextualFeatureExtractor,
+    FeatureExtractor,
+    FeatureInfo,
+    KinematicFeatureExtractor,
+    QualityFeatureExtractor,
+    TemporalFeatureExtractor,
+)
 from .incremental import (
     CheckpointManager,
     FileHashTracker,
@@ -97,4 +132,31 @@ __all__ = [
     "DataSourceFactory",
     # Validation
     "TrajectoryValidator",
+    # Feature Engineering
+    "FeatureExtractor",
+    "FeatureInfo",
+    "KinematicFeatureExtractor",
+    "TemporalFeatureExtractor",
+    "ContextualFeatureExtractor",
+    "QualityFeatureExtractor",
+    # Feature Store
+    "FeatureStore",
+    "FeatureStorage",
+    "FileFeatureStorage",
+    "InMemoryFeatureStorage",
+    "BatchFeatureProcessor",
+    "create_default_feature_store",
+    # Data Augmentation
+    "TrajectoryAugmenter",
+    "NoiseInjectionAugmenter",
+    "TemporalShiftAugmenter",
+    "TrajectoryInterpolationAugmenter",
+    "SpatialTransformationAugmenter",
+    "AugmentationPipeline",
+    "create_default_augmentation_pipeline",
+    # Feature Validation
+    "FeatureQualityAssessor",
+    "FeatureQualityReport",
+    "FeatureCorrelationAnalyzer",
+    "generate_feature_quality_summary",
 ]
