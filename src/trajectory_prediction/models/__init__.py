@@ -8,9 +8,13 @@ from .base import (
     TrajectoryPredictor,
 )
 from .baseline import ConstantAccelerationPredictor, ConstantVelocityPredictor
+from .ensemble import EnsemblePredictor
 from .factory import ModelFactory, ModelRegistry, create_model, get_available_models
+from .gaussian_process import GaussianProcessPredictor
 from .knn import KNearestNeighborsPredictor
+from .mixture_density import SimplifiedMDNPredictor
 from .polynomial import PolynomialRegressionPredictor
+from .tree_ensemble import TreeEnsemblePredictor
 
 __all__ = [
     # Base classes and types
@@ -19,11 +23,18 @@ __all__ = [
     "ModelConfig",
     "PredictionResult",
     "ModelPerformance",
-    # Model implementations
+    # Baseline models
     "ConstantVelocityPredictor",
     "ConstantAccelerationPredictor",
+    # Classical ML models
     "PolynomialRegressionPredictor",
     "KNearestNeighborsPredictor",
+    # Advanced ML models with uncertainty quantification
+    "GaussianProcessPredictor",
+    "TreeEnsemblePredictor",
+    "SimplifiedMDNPredictor",
+    # Ensemble methods
+    "EnsemblePredictor",
     # Factory and utilities
     "ModelFactory",
     "ModelRegistry",
