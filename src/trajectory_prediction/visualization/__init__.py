@@ -1,6 +1,7 @@
 """Visualization and dashboard components."""
 
-__all__: list[str] = [
-    # Will be populated as visualization modules are added
-    # e.g., "dashboard", "plots", "animations"
-]
+from .analytics import TrajectoryAnalytics
+from .dashboard import TrajectoryDashboard
+from .plots import TrajectoryPlotter
+
+__all__: list[str] = ["TrajectoryDashboard", "TrajectoryPlotter", "TrajectoryAnalytics"]
