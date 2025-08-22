@@ -1,6 +1,14 @@
 """Evaluation metrics and validation framework."""
 
-__all__: list[str] = [
-    # Will be populated as evaluation modules are added
-    # e.g., "metrics", "validators", "statistical_tests"
+from .cross_validation import CrossValidationRunner, TimeSeriesCrossValidator
+from .metrics import ModelEvaluator, ade, evaluate_single_prediction, fde, rmse
+
+__all__ = [
+    "ModelEvaluator",
+    "rmse",
+    "ade",
+    "fde",
+    "evaluate_single_prediction",
+    "CrossValidationRunner",
+    "TimeSeriesCrossValidator",
 ]
