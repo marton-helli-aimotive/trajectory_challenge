@@ -1,7 +1,22 @@
 """Evaluation metrics and validation framework."""
 
+from .comprehensive_evaluator import ComprehensiveEvaluator
 from .cross_validation import CrossValidationRunner, TimeSeriesCrossValidator
 from .metrics import ModelEvaluator, ade, evaluate_single_prediction, fde, rmse
+from .safety_metrics import (
+    collision_probability,
+    lateral_error,
+    minimum_distance,
+    safety_critical_scenarios,
+    time_to_collision,
+)
+from .statistical_testing import (
+    bootstrap_confidence_interval,
+    effect_size_cohens_d,
+    multiple_comparison_correction,
+    paired_t_test,
+    wilcoxon_signed_rank_test,
+)
 from .uncertainty_metrics import (
     adaptive_uncertainty_score,
     calibration_error,
@@ -14,6 +29,8 @@ from .uncertainty_metrics import (
 )
 
 __all__ = [
+    # Comprehensive evaluation
+    "ComprehensiveEvaluator",
     # Basic metrics
     "ModelEvaluator",
     "rmse",
@@ -23,6 +40,18 @@ __all__ = [
     # Cross validation
     "CrossValidationRunner",
     "TimeSeriesCrossValidator",
+    # Safety metrics
+    "minimum_distance",
+    "time_to_collision",
+    "lateral_error",
+    "collision_probability",
+    "safety_critical_scenarios",
+    # Statistical testing
+    "paired_t_test",
+    "wilcoxon_signed_rank_test",
+    "multiple_comparison_correction",
+    "bootstrap_confidence_interval",
+    "effect_size_cohens_d",
     # Uncertainty quantification metrics
     "prediction_interval_coverage_probability",
     "mean_prediction_interval_width",
