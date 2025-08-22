@@ -62,6 +62,7 @@ trajectory_challenge/
 - **Type checking**: `mypy src/`
 - **Linting**: `ruff check src/`
 - **Format code**: `black src/ tests/`
+- **Run dashboard**: `streamlit run scripts/dashboard/trajectory_dashboard_app.py`
 
 ## Features
 

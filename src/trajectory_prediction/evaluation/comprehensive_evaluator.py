@@ -225,7 +225,7 @@ class ComprehensiveEvaluator:
         uncertainty_result: dict[str, Any] = {}
 
         # For now, return basic uncertainty metrics
-        # TODO: Implement full uncertainty evaluation when prediction structure is clarified
+        # Uncertainty evaluation pending prediction structure clarification
         uncertainty_result["uncertainty_available"] = False
         uncertainty_result["note"] = (
             "Uncertainty evaluation pending prediction structure clarification"
