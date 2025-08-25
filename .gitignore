@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.env
+.venv
+.uv/
+.pyrightcache/
+.coverage
+htmlcov/
+.cache/
+.mypy_cache/
+.dist/
+dist/
+build/

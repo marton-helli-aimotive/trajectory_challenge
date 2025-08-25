@@ -1,0 +1,3 @@
+# Central Ruff configuration (overrides or extends pyproject if needed)
+line-length = 100
+target-version = "py312"

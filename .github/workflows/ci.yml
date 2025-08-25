@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+      - name: Sync dependencies
+        run: ~/.local/bin/uv sync --all-extras --dev
+      - name: Lint (Ruff)
+        run: ~/.local/bin/uv run ruff check .
+      - name: Type check (Pyright)
+        run: ~/.local/bin/uv run pyright
+      - name: Tests (Pytest)
+        run: ~/.local/bin/uv run pytest --cov=trajectory_challenge --cov-report=xml --cov-report=term-missing
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
+          verbose: true
