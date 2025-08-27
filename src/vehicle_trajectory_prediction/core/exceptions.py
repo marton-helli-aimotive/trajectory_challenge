@@ -78,3 +78,36 @@ class EvaluationError(TrajectoryPredictionError):
         super().__init__(message, {"metric_name": metric_name, "operation": operation})
         self.metric_name = metric_name
         self.operation = operation
+
+
+class ETLPipelineError(TrajectoryPredictionError):
+    """Raised when ETL pipeline operations fail."""
+
+    def __init__(
+        self, message: str, pipeline_stage: Optional[str] = None, operation: Optional[str] = None
+    ) -> None:
+        super().__init__(message, {"pipeline_stage": pipeline_stage, "operation": operation})
+        self.pipeline_stage = pipeline_stage
+        self.operation = operation
+
+
+class StorageError(TrajectoryPredictionError):
+    """Raised when storage operations fail."""
+
+    def __init__(
+        self, message: str, storage_type: Optional[str] = None, operation: Optional[str] = None
+    ) -> None:
+        super().__init__(message, {"storage_type": storage_type, "operation": operation})
+        self.storage_type = storage_type
+        self.operation = operation
+
+
+class DataQualityError(TrajectoryPredictionError):
+    """Raised when data quality validation fails."""
+
+    def __init__(
+        self, message: str, quality_metric: Optional[str] = None, threshold: Optional[float] = None
+    ) -> None:
+        super().__init__(message, {"quality_metric": quality_metric, "threshold": threshold})
+        self.quality_metric = quality_metric
+        self.threshold = threshold
