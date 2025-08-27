@@ -1,0 +1,126 @@
+version: '3.8'
+
+services:
+  # Main application service
+  trajectory-prediction:
+    build:
+      context: .
+      dockerfile: Containerfile
+      target: development
+    container_name: trajectory-prediction-dev
+    ports:
+      - "8000:8000"  # API server
+      - "8888:8888"  # Jupyter notebook
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./notebooks:/app/notebooks
+      - ./src:/app/src:ro
+      - ./configs:/app/configs:ro
+      - ./tests:/app/tests:ro
+    environment:
+      - PYTHONPATH=/app/src
+      - ENVIRONMENT=development
+    command: ["python", "-m", "vehicle_trajectory_prediction.cli", "serve", "--host", "0.0.0.0", "--port", "8000"]
+    networks:
+      - trajectory-network
+    depends_on:
+      - mlflow
+      - database
+
+  # MLflow tracking server
+  mlflow:
+    build:
+      context: .
+      dockerfile: Containerfile
+      target: development
+    container_name: mlflow-server
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlflow:/app/mlflow
+    environment:
+      - MLFLOW_TRACKING_URI=sqlite:///mlflow/mlflow.db
+      - MLFLOW_DEFAULT_ARTIFACT_ROOT=./mlflow/artifacts
+    command: ["mlflow", "server", "--host", "0.0.0.0", "--port", "5000", "--backend-store-uri", "sqlite:///mlflow/mlflow.db", "--default-artifact-root", "./mlflow/artifacts"]
+    networks:
+      - trajectory-network
+
+  # Database for metadata storage
+  database:
+    image: postgres:15-alpine
+    container_name: trajectory-db
+    environment:
+      POSTGRES_DB: trajectory_prediction
+      POSTGRES_USER: trajectory_user
+      POSTGRES_PASSWORD: trajectory_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - trajectory-network
+
+  # Redis for caching and job queue
+  redis:
+    image: redis:7-alpine
+    container_name: trajectory-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - trajectory-network
+
+  # Dashboard service
+  dashboard:
+    build:
+      context: .
+      dockerfile: Containerfile
+      target: development
+    container_name: trajectory-dashboard
+    ports:
+      - "8050:8050"
+    volumes:
+      - ./data:/app/data:ro
+      - ./logs:/app/logs:ro
+    environment:
+      - PYTHONPATH=/app/src
+      - ENVIRONMENT=development
+    command: ["python", "-m", "vehicle_trajectory_prediction.visualization.dashboard", "--host", "0.0.0.0", "--port", "8050"]
+    networks:
+      - trajectory-network
+    depends_on:
+      - trajectory-prediction
+
+  # Monitoring service
+  monitoring:
+    build:
+      context: .
+      dockerfile: Containerfile
+      target: development
+    container_name: trajectory-monitoring
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data:ro
+      - ./logs:/app/logs:ro
+    environment:
+      - PYTHONPATH=/app/src
+      - ENVIRONMENT=development
+    command: ["python", "-m", "vehicle_trajectory_prediction.mlops.monitoring", "--host", "0.0.0.0", "--port", "8080"]
+    networks:
+      - trajectory-network
+    depends_on:
+      - trajectory-prediction
+      - database
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  trajectory-network:
+    driver: bridge

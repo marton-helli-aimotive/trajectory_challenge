@@ -1,0 +1,35 @@
+# Production environment configuration
+# Inherits from default/config.yaml
+
+defaults:
+  - default/config
+  - _self_
+
+# Override for production environment
+environment: production
+debug: false
+
+# Production-optimized data settings
+data:
+  batch_size: 5000  # Larger batches for production
+  num_workers: 8    # More workers for production
+  chunk_size: 50000 # Larger chunks for production
+
+# Production model settings
+model:
+  models: [cv, ca, polynomial, knn, gaussian_process, ensemble]  # All models
+  prediction_horizon: 50  # Longer horizon for production
+
+# Production logging
+logging:
+  level: INFO
+  format: json  # Structured logging for production
+  log_to_file: true
+
+# Production MLOps
+mlops:
+  mlflow_enabled: true
+  model_serving_enabled: true
+  serving_workers: 8  # More workers for production
+  monitoring_enabled: true
+  drift_detection_enabled: true
