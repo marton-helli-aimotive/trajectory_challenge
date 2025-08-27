@@ -1,0 +1,30 @@
+# Development environment configuration
+# Inherits from default/config.yaml
+
+defaults:
+  - default/config
+  - _self_
+
+# Override for development environment
+environment: development
+debug: true
+
+# Development-specific data settings
+data:
+  batch_size: 100  # Smaller batches for faster iteration
+  num_workers: 2   # Fewer workers for development
+
+# Development-specific model settings
+model:
+  models: [cv, ca, polynomial]  # Fewer models for faster development
+  prediction_horizon: 10        # Shorter horizon for faster testing
+
+# Development-specific logging
+logging:
+  level: DEBUG
+  format: text  # More readable for development
+
+# Development-specific MLOps
+mlops:
+  mlflow_enabled: false  # Disable MLflow for development
+  model_serving_enabled: false  # Disable model serving for development

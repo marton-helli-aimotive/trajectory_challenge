@@ -1,0 +1,261 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vehicle-trajectory-prediction"
+version = "0.1.0"
+description = "Advanced vehicle trajectory prediction system with modern ML engineering practices"
+authors = [
+    {name = "ML Engineer", email = "engineer@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+keywords = ["machine-learning", "trajectory-prediction", "autonomous-vehicles", "spatial-temporal"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+
+dependencies = [
+    # Core data processing
+    "pandas>=2.0.0",
+    "polars>=0.19.0",
+    "numpy>=1.24.0",
+    "pyarrow>=12.0.0",
+    "duckdb>=0.8.0",
+    
+    # Geospatial and geometric operations
+    "geopandas>=0.13.0",
+    "shapely>=2.0.0",
+    "folium>=0.14.0",
+    
+    # Machine learning
+    "scikit-learn>=1.3.0",
+    "xgboost>=1.7.0",
+    "lightgbm>=4.0.0",
+    "gpy>=1.10.0",
+    "gpytorch>=2.0.0",
+    "torch>=2.0.0",
+    "optuna>=3.2.0",
+    "shap>=0.42.0",
+    
+    # Async and web
+    "aiohttp>=3.8.0",
+    "asyncio-mqtt>=0.13.0",
+    "fastapi>=0.100.0",
+    "uvicorn[standard]>=0.23.0",
+    
+    # Configuration and validation
+    "hydra-core>=1.3.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    
+    # Visualization
+    "plotly>=5.15.0",
+    "dash>=2.11.0",
+    "dash-bootstrap-components>=1.4.0",
+    "altair>=5.0.0",
+    
+    # MLOps and monitoring
+    "mlflow>=2.5.0",
+    "evidently>=0.2.0",
+    "prefect>=2.8.0",
+    
+    # Testing and quality
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "hypothesis>=6.75.0",
+    "mypy>=1.5.0",
+    "black>=23.7.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "pre-commit>=3.3.0",
+    
+    # Utilities
+    "rich>=13.5.0",
+    "structlog>=23.1.0",
+    "python-dotenv>=1.0.0",
+    "click>=8.1.0",
+    "tqdm>=4.65.0",
+    "joblib>=1.3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "jupyter>=1.0.0",
+    "ipykernel>=6.25.0",
+    "notebook>=7.0.0",
+    "pytest-benchmark>=4.0.0",
+    "memory-profiler>=0.61.0",
+    "line-profiler>=4.1.0",
+]
+
+gpu = [
+    "torch[cuda]>=2.0.0",
+    "gpytorch[cuda]>=2.0.0",
+]
+
+dashboard = [
+    "streamlit>=1.25.0",
+    "dash-extensions>=1.0.0",
+]
+
+[project.scripts]
+trajectory-predict = "vehicle_trajectory_prediction.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/example/vehicle-trajectory-prediction"
+Documentation = "https://vehicle-trajectory-prediction.readthedocs.io"
+Repository = "https://github.com/example/vehicle-trajectory-prediction"
+"Bug Tracker" = "https://github.com/example/vehicle-trajectory-prediction/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/vehicle_trajectory_prediction"]
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["vehicle_trajectory_prediction"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "pandas.*",
+    "numpy.*",
+    "sklearn.*",
+    "xgboost.*",
+    "lightgbm.*",
+    "gpy.*",
+    "gpytorch.*",
+    "torch.*",
+    "plotly.*",
+    "dash.*",
+    "streamlit.*",
+    "folium.*",
+    "geopandas.*",
+    "shapely.*",
+    "polars.*",
+    "duckdb.*",
+    "pyarrow.*",
+    "aiohttp.*",
+    "asyncio_mqtt.*",
+    "fastapi.*",
+    "uvicorn.*",
+    "hydra.*",
+    "pydantic.*",
+    "mlflow.*",
+    "evidently.*",
+    "prefect.*",
+    "optuna.*",
+    "shap.*",
+    "altair.*",
+    "structlog.*",
+    "rich.*",
+    "click.*",
+    "tqdm.*",
+    "joblib.*",
+    "folium.*",
+    "jupyter.*",
+    "ipykernel.*",
+    "notebook.*",
+    "pytest.*",
+    "pytest_asyncio.*",
+    "pytest_cov.*",
+    "hypothesis.*",
+    "pre_commit.*",
+    "memory_profiler.*",
+    "line_profiler.*",
+    "streamlit.*",
+    "dash_extensions.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --strict-config"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "e2e: marks tests as end-to-end tests",
+]
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/.venv/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod"
+]
+
+[tool.hypothesis]
+max_examples = 100
+deadline = 5000
+verbosity = "normal"
+
+
