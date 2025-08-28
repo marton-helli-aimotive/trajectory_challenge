@@ -1,3 +1,15 @@
-"""Machine learning models for trajectory prediction."""
+"""Trajectory prediction models package."""
 
-__all__ = []
+from .base import BaseTrajectoryPredictor, PredictionResult
+from .baseline import ConstantVelocityPredictor, ConstantAccelerationPredictor
+from .polynomial import PolynomialRegressionPredictor
+from .knn import KNearestNeighborsPredictor
+
+__all__ = [
+    "BaseTrajectoryPredictor",
+    "PredictionResult", 
+    "ConstantVelocityPredictor",
+    "ConstantAccelerationPredictor",
+    "PolynomialRegressionPredictor",
+    "KNearestNeighborsPredictor"
+]
