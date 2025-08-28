@@ -156,21 +156,45 @@ def evaluate(data_path: str, models_path: str, output: str, metrics: tuple) -> N
 
 
 @cli.command()
-@click.option("--host", default="127.0.0.1", help="Host to bind to")
-@click.option("--port", default=8050, type=int, help="Port to bind to")
-@click.option("--debug", is_flag=True, help="Enable debug mode")
-def dashboard(host: str, port: int, debug: bool) -> None:
-    """Start the interactive dashboard."""
+@click.option("--host", default="localhost", help="Host to bind to")
+@click.option("--port", default=8501, type=int, help="Port to bind to")
+@click.option("--browser", is_flag=True, help="Automatically open browser")
+@click.option("--config", type=click.Path(exists=True), help="Path to configuration file")
+def dashboard(host: str, port: int, browser: bool, config: Optional[str]) -> None:
+    """Start the interactive Streamlit dashboard."""
     logger = get_logger(__name__)
-    logger.info("Starting dashboard", host=host, port=port, debug=debug)
+    logger.info("Starting Streamlit dashboard", host=host, port=port, browser=browser)
     
     try:
-        from ..visualization.dashboard import create_dashboard
+        import streamlit.web.cli as stcli
         
-        app = create_dashboard()
-        app.run_server(host=host, port=port, debug=debug)
+        # Get the path to the dashboard script
+        dashboard_path = Path(__file__).parent.parent / "visualization" / "dashboard.py"
+        
+        if not dashboard_path.exists():
+            logger.error(f"Dashboard script not found at {dashboard_path}")
+            sys.exit(1)
+        
+        # Set up Streamlit arguments
+        sys.argv = [
+            "streamlit", "run",
+            str(dashboard_path),
+            "--server.port", str(port),
+            "--server.address", host,
+            "--server.headless", "true" if not browser else "false"
+        ]
+        
+        # Set environment variables for configuration
+        if config:
+            import os
+            os.environ['DASHBOARD_CONFIG'] = config
+        
+        logger.info(f"Dashboard will be available at http://{host}:{port}")
+        
+        # Run the Streamlit app
+        sys.exit(stcli.main())
     except ImportError as e:
-        logger.error("Failed to import dashboard dependencies", error=str(e))
+        logger.error("Failed to import Streamlit", error=str(e))
         sys.exit(1)
     except Exception as e:
         logger.error("Failed to start dashboard", error=str(e))
