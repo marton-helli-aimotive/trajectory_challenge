@@ -1,6 +1,6 @@
 """Core functionality for the vehicle trajectory prediction system."""
 
-from .config import get_config, Config
+from .config import get_config
 from .logging import setup_logging, get_logger
 from .exceptions import (
     TrajectoryPredictionError,
@@ -11,7 +11,6 @@ from .exceptions import (
 
 __all__ = [
     "get_config",
-    "Config",
     "setup_logging",
     "get_logger",
     "TrajectoryPredictionError",

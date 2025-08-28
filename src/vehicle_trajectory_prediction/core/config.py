@@ -236,9 +236,10 @@ class Config:
 
 
 # Register configuration with Hydra if available
-if HYDRA_AVAILABLE:
-    cs = ConfigStore.instance()
-    cs.store(name="config", node=Config)
+# Temporarily commented out to avoid Hydra Config class conflicts
+# if HYDRA_AVAILABLE:
+#     cs = ConfigStore.instance()
+#     cs.store(name="config", node=Config)
 
 
 def get_config(cfg=None):

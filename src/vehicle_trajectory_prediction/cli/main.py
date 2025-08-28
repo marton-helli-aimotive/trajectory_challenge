@@ -11,6 +11,7 @@ from omegaconf import DictConfig
 
 from ..core.config import get_config
 from ..core.logging import setup_logging, get_logger
+from .mlops import mlops
 
 
 @click.group()
@@ -282,7 +283,9 @@ def setup(config: Optional[str]) -> None:
             "logs",
             "notebooks",
             "models",
-            "results"
+            "results",
+            "mlflow",
+            "monitoring"
         ]
         
         for directory in directories:
@@ -306,6 +309,10 @@ def setup(config: Optional[str]) -> None:
 def main() -> None:
     """Main entry point for the CLI."""
     cli()
+
+
+# Add MLOps commands to main CLI
+cli.add_command(mlops)
 
 
 if __name__ == "__main__":
