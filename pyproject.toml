@@ -44,7 +44,7 @@ dependencies = [
     "xgboost>=1.7.0",
     "lightgbm>=4.0.0",
     "gpy>=1.10.0",
-    "gpytorch>=2.0.0",
+    "gpytorch>=1.14.0",
     "torch>=2.0.0",
     "optuna>=3.2.0",
     "shap>=0.42.0",
@@ -103,7 +103,7 @@ dev = [
 
 gpu = [
     "torch[cuda]>=2.0.0",
-    "gpytorch[cuda]>=2.0.0",
+    "gpytorch[cuda]>=1.14.0",
 ]
 
 dashboard = [
