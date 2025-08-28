@@ -51,10 +51,10 @@ def setup_logging(
             processors.append(structlog.processors.TimeStamper(fmt="iso"))
         
         if include_process_id:
-            processors.append(structlog.processors.add_log_level_number)
+            processors.append(structlog.stdlib.add_log_level_number)
         
         if include_thread_id:
-            processors.append(structlog.processors.add_log_level_number)
+            processors.append(structlog.stdlib.add_log_level_number)
         
         processors.extend([
             structlog.processors.StackInfoRenderer(),

@@ -13,7 +13,7 @@ import plotly.express as px
 import numpy as np
 import pandas as pd
 from typing import Dict, List, Optional, Tuple, Any, Union
-from vehicle_trajectory_prediction.core.data_models import TrajectoryData
+from vehicle_trajectory_prediction.core.models import TrajectoryData
 
 
 class TrajectoryPlotter:

@@ -435,3 +435,37 @@ class GaussianProcessPredictor(BaseTrajectoryPredictor):
             self.likelihood.load_state_dict(model_data['likelihood'])
         
         logger.info(f"Model loaded from {filepath}")
+    
+    def predict_batch(
+        self, 
+        trajectories: List[Trajectory],
+        prediction_horizon: Optional[int] = None,
+        prediction_frequency: Optional[float] = None
+    ) -> List[PredictionResult]:
+        """Predict future trajectories for multiple inputs."""
+        if not self.is_trained:
+            raise RuntimeError("Model must be trained before prediction")
+        
+        results = []
+        for trajectory in trajectories:
+            try:
+                result = self.predict(trajectory, prediction_horizon, prediction_frequency)
+                results.append(result)
+            except Exception as e:
+                logger.warning(f"Failed to predict trajectory {trajectory.vehicle_id}: {e}")
+                # Create a default result with the original trajectory
+                timestamps = self._prepare_prediction_timestamps(trajectory, prediction_horizon, prediction_frequency)
+                default_points = [trajectory.points[-1]] * len(timestamps)
+                results.append(PredictionResult(
+                    predicted_points=default_points,
+                    timestamps=timestamps,
+                    x_positions=[p.x for p in default_points],
+                    y_positions=[p.y for p in default_points],
+                    velocities=[p.velocity for p in default_points],
+                    accelerations=[p.acceleration for p in default_points],
+                    headings=[p.heading for p in default_points],
+                    confidence_scores=[0.0] * len(timestamps),
+                    uncertainty={"std": [float('inf')] * len(timestamps)}
+                ))
+        
+        return results

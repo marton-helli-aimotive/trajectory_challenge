@@ -383,3 +383,95 @@ class PredictionResult:
         
         if uncertainty_scores is not None and len(uncertainty_scores) != predicted_trajectory.length:
             raise ValueError("Number of uncertainty scores must match trajectory length")
+
+
+class TrajectoryData:
+    """Data structure for trajectory data with numpy arrays for efficient processing."""
+    
+    def __init__(
+        self,
+        vehicle_id: str,
+        timestamps: np.ndarray,
+        x_positions: np.ndarray,
+        y_positions: np.ndarray,
+        velocities: np.ndarray,
+        headings: np.ndarray,
+        accelerations: np.ndarray,
+        metadata: Optional[Dict[str, Any]] = None
+    ):
+        self.vehicle_id = vehicle_id
+        self.timestamps = timestamps
+        self.x_positions = x_positions
+        self.y_positions = y_positions
+        self.velocities = velocities
+        self.headings = headings
+        self.accelerations = accelerations
+        self.metadata = metadata or {}
+        
+        # Validate inputs
+        if not all(len(arr) == len(timestamps) for arr in [x_positions, y_positions, velocities, headings, accelerations]):
+            raise ValueError("All arrays must have the same length as timestamps")
+        
+        if len(timestamps) < 2:
+            raise ValueError("Trajectory must have at least 2 points")
+    
+    @property
+    def length(self) -> int:
+        """Number of points in trajectory."""
+        return len(self.timestamps)
+    
+    def to_trajectory(self) -> Trajectory:
+        """Convert to Trajectory object."""
+        points = []
+        for i in range(len(self.timestamps)):
+            point = TrajectoryPoint(
+                vehicle_id=self.vehicle_id,
+                x=self.x_positions[i],
+                y=self.y_positions[i],
+                timestamp=datetime.fromtimestamp(self.timestamps[i]) if isinstance(self.timestamps[i], (int, float)) else self.timestamps[i],
+                velocity=self.velocities[i],
+                acceleration=self.accelerations[i],
+                heading=self.headings[i]
+            )
+            points.append(point)
+        
+        start_time = points[0].timestamp
+        end_time = points[-1].timestamp
+        duration = (end_time - start_time).total_seconds()
+        total_distance = self._calculate_total_distance()
+        
+        return Trajectory(
+            vehicle_id=self.vehicle_id,
+            points=points,
+            start_time=start_time,
+            end_time=end_time,
+            duration=duration,
+            total_distance=total_distance,
+            metadata=self.metadata
+        )
+    
+    def _calculate_total_distance(self) -> float:
+        """Calculate total distance of the trajectory."""
+        if len(self.x_positions) < 2:
+            return 0.0
+        
+        distances = np.sqrt(
+            np.diff(self.x_positions) ** 2 + np.diff(self.y_positions) ** 2
+        )
+        return float(np.sum(distances))
+    
+    def get_segment(self, start_idx: int, end_idx: int) -> "TrajectoryData":
+        """Get trajectory segment between two indices."""
+        if start_idx < 0 or end_idx > len(self.timestamps) or start_idx >= end_idx:
+            raise ValueError("Invalid indices for trajectory segment")
+        
+        return TrajectoryData(
+            vehicle_id=self.vehicle_id,
+            timestamps=self.timestamps[start_idx:end_idx],
+            x_positions=self.x_positions[start_idx:end_idx],
+            y_positions=self.y_positions[start_idx:end_idx],
+            velocities=self.velocities[start_idx:end_idx],
+            headings=self.headings[start_idx:end_idx],
+            accelerations=self.accelerations[start_idx:end_idx],
+            metadata=self.metadata.copy()
+        )

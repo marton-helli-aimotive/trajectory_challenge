@@ -34,7 +34,7 @@ class PredictionRequest(BaseModel):
     confidence_level: float = Field(default=0.95, ge=0.5, le=0.99, description="Confidence level for uncertainty")
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "vehicle_id": "vehicle_001",
                 "current_state": {
@@ -59,7 +59,7 @@ class BatchPredictionRequest(BaseModel):
     model_name: Optional[str] = Field(default=None, description="Model to use for all predictions")
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "predictions": [
                     {
@@ -92,7 +92,7 @@ class PredictionResponse(BaseModel):
     timestamp: str
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "vehicle_id": "vehicle_001",
                 "model_name": "cv",

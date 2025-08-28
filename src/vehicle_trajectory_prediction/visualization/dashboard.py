@@ -20,12 +20,12 @@ project_root = Path(__file__).parent.parent.parent.parent
 sys.path.append(str(project_root))
 
 from vehicle_trajectory_prediction.core.config import ModelConfig
-from vehicle_trajectory_prediction.core.data_models import TrajectoryData
+from vehicle_trajectory_prediction.core.models import TrajectoryData
 from vehicle_trajectory_prediction.models import (
     ConstantVelocityPredictor,
     ConstantAccelerationPredictor,
     PolynomialRegressionPredictor,
-    KNNPredictor,
+    KNearestNeighborsPredictor,
     GaussianProcessPredictor,
     EnsemblePredictor
 )
@@ -70,7 +70,7 @@ class TrajectoryDashboard:
             "Constant Velocity": ConstantVelocityPredictor(self.config),
             "Constant Acceleration": ConstantAccelerationPredictor(self.config),
             "Polynomial Regression": PolynomialRegressionPredictor(self.config),
-            "K-Nearest Neighbors": KNNPredictor(self.config),
+            "K-Nearest Neighbors": KNearestNeighborsPredictor(self.config),
             "Gaussian Process": GaussianProcessPredictor(self.config),
             "Ensemble": EnsemblePredictor(self.config)
         }
