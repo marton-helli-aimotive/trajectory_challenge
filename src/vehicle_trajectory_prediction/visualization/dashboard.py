@@ -149,8 +149,9 @@ class TrajectoryDashboard:
                    unsafe_allow_html=True)
         
         # Sidebar navigation
+        st.sidebar.title("Navigation")
         page = st.sidebar.selectbox(
-            "Navigation",
+            "Select Page",
             ["🏠 Overview", "📊 Trajectory Visualization", "🔍 Model Comparison", 
              "📈 Dataset Exploration", "🤖 Model Explainability", "⚙️ Settings"]
         )
@@ -253,7 +254,8 @@ class TrajectoryDashboard:
         trajectory_idx = st.selectbox(
             "Select Trajectory",
             range(len(self.sample_trajectories)),
-            format_func=lambda x: f"Vehicle {self.sample_trajectories[x].vehicle_id}"
+            format_func=lambda x: f"Vehicle {self.sample_trajectories[x].vehicle_id}",
+            key="trajectory_selector"
         )
         
         trajectory = self.sample_trajectories[trajectory_idx]
@@ -264,16 +266,18 @@ class TrajectoryDashboard:
         with col1:
             plot_type = st.selectbox(
                 "Plot Type",
-                ["2D Trajectory", "3D Trajectory", "Velocity Profile", "Acceleration Profile"]
+                ["2D Trajectory", "3D Trajectory", "Velocity Profile", "Acceleration Profile"],
+                key="plot_type_selector"
             )
         
         with col2:
-            show_prediction = st.checkbox("Show Predictions", value=True)
+            show_prediction = st.checkbox("Show Predictions", value=True, key="show_predictions_checkbox")
             if show_prediction:
                 selected_models = st.multiselect(
                     "Select Models for Prediction",
                     list(self.models.keys()),
-                    default=["Constant Velocity", "Polynomial Regression"]
+                    default=["Constant Velocity", "Polynomial Regression"],
+                    key="model_selector"
                 )
         
         # Create the selected plot
@@ -334,7 +338,8 @@ class TrajectoryDashboard:
         selected_models = st.multiselect(
             "Select Models to Compare",
             list(self.models.keys()),
-            default=list(self.models.keys())[:3]
+            default=list(self.models.keys())[:3],
+            key="model_comparison_selector"
         )
         
         if not selected_models:
@@ -349,7 +354,8 @@ class TrajectoryDashboard:
                 "Prediction Horizon (seconds)",
                 min_value=1,
                 max_value=30,
-                value=10
+                value=10,
+                key="prediction_horizon_slider"
             )
         
         with col2:
@@ -357,11 +363,12 @@ class TrajectoryDashboard:
                 "Test Trajectories",
                 min_value=1,
                 max_value=len(self.sample_trajectories),
-                value=min(3, len(self.sample_trajectories))
+                value=min(3, len(self.sample_trajectories)),
+                key="test_size_slider"
             )
         
         with col3:
-            include_safety = st.checkbox("Include Safety Metrics", value=True)
+            include_safety = st.checkbox("Include Safety Metrics", value=True, key="safety_metrics_checkbox")
         
         # Run comparison
         if st.button("Run Model Comparison"):
@@ -507,7 +514,8 @@ class TrajectoryDashboard:
         # Model selection
         selected_model = st.selectbox(
             "Select Model for Analysis",
-            list(self.models.keys())
+            list(self.models.keys()),
+            key="explainability_model_selector"
         )
         
         if not selected_model:
@@ -519,7 +527,8 @@ class TrajectoryDashboard:
         # Explainability options
         explainability_type = st.selectbox(
             "Explainability Type",
-            ["Feature Importance", "Prediction Analysis", "Model Behavior", "Uncertainty Analysis"]
+            ["Feature Importance", "Prediction Analysis", "Model Behavior", "Uncertainty Analysis"],
+            key="explainability_type_selector"
         )
         
         if explainability_type == "Feature Importance":
@@ -723,12 +732,14 @@ class TrajectoryDashboard:
             "Default Prediction Horizon (seconds)",
             min_value=1,
             max_value=30,
-            value=self.config.prediction_horizon
+            value=self.config.prediction_horizon,
+            key="settings_prediction_horizon_slider"
         )
         
         new_update_frequency = st.selectbox(
             "Update Frequency",
-            ["Real-time", "5 seconds", "10 seconds", "30 seconds", "Manual"]
+            ["Real-time", "5 seconds", "10 seconds", "30 seconds", "Manual"],
+            key="settings_update_frequency_selector"
         )
         
         # Visualization settings
@@ -739,15 +750,17 @@ class TrajectoryDashboard:
         with col1:
             default_plot_type = st.selectbox(
                 "Default Plot Type",
-                ["2D Trajectory", "3D Trajectory", "Velocity Profile", "Acceleration Profile"]
+                ["2D Trajectory", "3D Trajectory", "Velocity Profile", "Acceleration Profile"],
+                key="settings_default_plot_type_selector"
             )
             
-            show_grid = st.checkbox("Show Grid", value=True)
+            show_grid = st.checkbox("Show Grid", value=True, key="settings_show_grid_checkbox")
         
         with col2:
             color_scheme = st.selectbox(
                 "Color Scheme",
-                ["Default", "Viridis", "Plasma", "Inferno", "Magma"]
+                ["Default", "Viridis", "Plasma", "Inferno", "Magma"],
+                key="settings_color_scheme_selector"
             )
             
             animation_speed = st.slider(
@@ -755,7 +768,8 @@ class TrajectoryDashboard:
                 min_value=0.1,
                 max_value=2.0,
                 value=1.0,
-                step=0.1
+                step=0.1,
+                key="settings_animation_speed_slider"
             )
         
         # Data settings
@@ -765,10 +779,11 @@ class TrajectoryDashboard:
             "Maximum Trajectories to Load",
             min_value=10,
             max_value=1000,
-            value=100
+            value=100,
+            key="settings_max_trajectories_slider"
         )
         
-        cache_predictions = st.checkbox("Cache Model Predictions", value=True)
+        cache_predictions = st.checkbox("Cache Model Predictions", value=True, key="settings_cache_predictions_checkbox")
         
         # Save settings
         if st.button("Save Settings"):
