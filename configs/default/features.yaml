@@ -1,0 +1,185 @@
+# Feature Engineering Configuration
+# This file contains all configuration parameters for the feature engineering pipeline
+
+# Feature Extraction Configuration
+feature_extraction:
+  # Velocity features
+  velocity_window_size: 5
+  velocity_smoothing_factor: 0.1
+  
+  # Acceleration features  
+  acceleration_window_size: 3
+  jerk_window_size: 3
+  
+  # Curvature features
+  curvature_window_size: 7
+  min_curvature_threshold: 0.001
+  
+  # Lane change features
+  lane_change_threshold: 0.5
+  lane_change_min_duration: 10
+  
+  # Spatial-temporal features
+  spatial_resolution: 1.0
+  temporal_resolution: 0.1
+  context_radius: 50.0
+  
+  # Feature selection
+  enable_velocity_features: true
+  enable_acceleration_features: true
+  enable_curvature_features: true
+  enable_lane_change_features: true
+  enable_spatial_temporal_features: true
+  enable_contextual_features: true
+
+# Quality Metrics Configuration
+quality_metrics:
+  # Completeness thresholds
+  min_trajectory_length: 10
+  max_missing_ratio: 0.2
+  min_time_coverage: 0.8
+  
+  # Smoothness thresholds
+  max_velocity_jump: 10.0
+  max_acceleration_jump: 5.0
+  max_position_jump: 5.0
+  smoothness_window_size: 5
+  
+  # Consistency thresholds
+  max_velocity: 50.0
+  max_acceleration: 10.0
+  max_jerk: 5.0
+  min_velocity: 0.0
+  
+  # Physics constraints
+  max_centripetal_acceleration: 15.0
+  min_turning_radius: 5.0
+  max_angular_velocity: 2.0
+  
+  # Quality scoring weights
+  completeness_weight: 0.3
+  smoothness_weight: 0.3
+  consistency_weight: 0.2
+  physics_weight: 0.2
+  
+  # Outlier detection
+  outlier_z_threshold: 3.0
+  outlier_iqr_multiplier: 1.5
+  
+  # Report generation
+  generate_detailed_reports: true
+  save_quality_plots: false
+  quality_plot_path: "quality_plots"
+
+# Data Augmentation Configuration
+augmentation:
+  # Noise injection parameters
+  noise_std_position: 0.1
+  noise_std_velocity: 0.05
+  noise_std_timestamp: 0.01
+  noise_type: "gaussian"  # "gaussian", "uniform", "laplace"
+  
+  # Interpolation parameters
+  interpolation_method: "cubic"  # "linear", "cubic", "spline"
+  max_interpolation_gap: 2.0
+  interpolation_density: 2.0  # points per original point
+  
+  # Synthetic scenario parameters
+  synthetic_scenario_count: 100
+  scenario_complexity_range: [0.1, 1.0]
+  scenario_duration_range: [10.0, 60.0]
+  
+  # Adversarial example parameters
+  adversarial_perturbation_scale: 0.1
+  adversarial_max_iterations: 10
+  adversarial_epsilon: 0.01
+  
+  # General augmentation parameters
+  enable_noise_injection: true
+  enable_interpolation: true
+  enable_synthetic_scenarios: true
+  enable_adversarial_examples: true
+  preserve_physics_constraints: true
+
+# Feature Store Configuration
+feature_store:
+  # Storage settings
+  base_path: "data/feature_store"
+  enable_caching: true
+  cache_expiration_hours: 24
+  max_cache_size_mb: 1000
+  
+  # Feature computation settings
+  enable_parallel_computation: true
+  max_workers: 4
+  batch_size: 100
+  
+  # Versioning settings
+  enable_versioning: true
+  max_versions_per_feature: 10
+  
+  # Validation settings
+  enable_validation: true
+  strict_validation: false
+  
+  # Performance settings
+  enable_compression: true
+  compression_level: 6
+
+# Feature Validation Configuration
+validation:
+  # Validation thresholds
+  min_feature_quality_score: 0.7
+  max_outlier_ratio: 0.1
+  min_correlation_threshold: 0.3
+  max_duplicate_ratio: 0.05
+  
+  # Physics validation
+  enable_physics_validation: true
+  max_velocity_violation_ratio: 0.05
+  max_acceleration_violation_ratio: 0.05
+  max_curvature_violation_ratio: 0.1
+  
+  # Statistical validation
+  enable_statistical_validation: true
+  outlier_z_threshold: 3.0
+  outlier_iqr_multiplier: 1.5
+  normality_test_alpha: 0.05
+  
+  # Quality scoring
+  enable_quality_scoring: true
+  quality_weights:
+    completeness: 0.25
+    consistency: 0.25
+    physics: 0.25
+    statistics: 0.25
+  
+  # Report generation
+  enable_detailed_reports: true
+  report_output_path: "validation_reports"
+  save_validation_plots: false
+
+# Feature Engineering Pipeline Configuration
+pipeline:
+  # Pipeline stages
+  enable_feature_extraction: true
+  enable_quality_validation: true
+  enable_data_augmentation: true
+  enable_feature_storage: true
+  enable_validation_reporting: true
+  
+  # Processing settings
+  batch_processing: true
+  batch_size: 100
+  enable_parallel_processing: true
+  max_workers: 4
+  
+  # Output settings
+  save_intermediate_results: true
+  intermediate_results_path: "data/intermediate"
+  enable_progress_tracking: true
+  
+  # Error handling
+  continue_on_error: true
+  max_errors_per_batch: 10
+  log_error_details: true
