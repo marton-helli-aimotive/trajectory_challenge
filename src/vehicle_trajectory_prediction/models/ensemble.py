@@ -409,6 +409,47 @@ class EnsemblePredictor(BaseTrajectoryPredictor):
         
         return combined_pred
     
+    def predict_batch(self, trajectories: List[Trajectory],
+                     prediction_horizon: Optional[int] = None,
+                     prediction_frequency: Optional[float] = None) -> List[PredictionResult]:
+        """
+        Predict future trajectories for multiple inputs using ensemble of models.
+        
+        Args:
+            trajectories: List of input trajectories for prediction
+            prediction_horizon: Optional prediction horizon override
+            prediction_frequency: Optional prediction frequency override
+            
+        Returns:
+            List of PredictionResult with combined predictions
+        """
+        if not self.is_trained:
+            raise RuntimeError("Ensemble must be trained before prediction")
+        
+        if not self.base_models:
+            raise ValueError("No models in ensemble")
+        
+        results = []
+        for trajectory in trajectories:
+            try:
+                result = self.predict(trajectory, prediction_horizon, prediction_frequency)
+                results.append(result)
+            except Exception as e:
+                logger.warning(f"Batch prediction failed for trajectory: {e}")
+                # Create a default result with zeros
+                default_result = PredictionResult(
+                    predicted_points=[],
+                    timestamps=[],
+                    x_positions=[],
+                    y_positions=[],
+                    velocities=[],
+                    accelerations=[],
+                    headings=[]
+                )
+                results.append(default_result)
+        
+        return results
+    
     def update_weights_online(self, true_trajectory: Trajectory, 
                             predicted_trajectory: PredictionResult):
         """
