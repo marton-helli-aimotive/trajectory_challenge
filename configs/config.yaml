@@ -1,0 +1,78 @@
+# Main configuration for trajectory prediction pipeline
+# Override with environment-specific configs in config/
+
+defaults:
+  - data: ngsim
+  - model: ensemble
+  - evaluation: comprehensive
+  - logging: default
+  - _self_
+
+# Global settings
+project:
+  name: "trajectory_prediction"
+  version: "0.1.0"
+  description: "Advanced Vehicle Trajectory Prediction Pipeline"
+
+# Directories
+paths:
+  data:
+    raw: "data/raw"
+    processed: "data/processed" 
+    features: "data/features"
+  artifacts:
+    models: "artifacts/models"
+    experiments: "mlflow_tracking"
+  logs: "logs"
+
+# Async processing
+async:
+  max_concurrent_requests: 50
+  request_timeout: 30.0
+  retry_attempts: 3
+  backoff_factor: 2.0
+
+# Model training
+training:
+  test_size: 0.2
+  validation_size: 0.2
+  random_state: 42
+  cv_folds: 5
+  
+# Feature engineering
+features:
+  window_size: 30  # seconds
+  prediction_horizon: 10  # seconds
+  sampling_rate: 10  # Hz
+  interpolation_method: "linear"
+  
+# Evaluation
+evaluation:
+  metrics:
+    - "rmse"
+    - "mae" 
+    - "ade"
+    - "fde"
+    - "min_distance"
+    - "ttc"
+    - "lateral_error"
+  confidence_level: 0.95
+
+# Dashboard
+dashboard:
+  host: "0.0.0.0"
+  port: 8050
+  debug: false
+  
+# API serving  
+serving:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  batch_size: 32
+
+# Monitoring
+monitoring:
+  log_level: "INFO"
+  metrics_interval: 60  # seconds
+  health_check_interval: 30  # seconds
